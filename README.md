@@ -11,4 +11,4 @@ only tested with hashcat
 
 #### ./flonkerton.sh -p pot.pot -f hashes.txt
 
-## Default POTFILE is located at /usr/share/hashcat/masterpot.pot and will be used if -p flag is not used
+#### Default POTFILE is located at /usr/share/hashcat/masterpot.pot and will be used if -p flag is not used
