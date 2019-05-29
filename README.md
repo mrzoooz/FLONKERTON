@@ -12,3 +12,7 @@ only tested with hashcat
 #### ./flonkerton.sh -p pot.pot -f hashes.txt
 
 #### Default POTFILE is located at /usr/share/hashcat/masterpot.pot and will be used if -p flag is not used
+
+## CrackMapExec output that works with this script
+
+![Alt text](img/samplepic.PNG)
