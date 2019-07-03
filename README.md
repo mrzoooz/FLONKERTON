@@ -15,8 +15,8 @@ only tested with hashcat
 
 ## CrackMapExec output that works with this script
 
-#UPDATE
+# UPDATE
 
-If your crackmap output is like the one shown below, run #### awk '{ print $4 }' $crackmapfile
+If your crackmap output is like the one shown below, run: [awk '{ print $4 }' $crackmapfile > updated.txt] and use outfile as your infile
 
 ![Alt text](img/samplepic.PNG)
