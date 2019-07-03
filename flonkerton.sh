@@ -16,11 +16,9 @@ print_usage() {
 #FILES (no quotes)
 crackmap_file=''
 pot_file=''
-parsed_hash=hashes.txt
-result_file=results.txt
+parsed_hash=parsed.txt
 cracked_hashes=crackedhashes.txt
-usernames=usernames.txt
-crackedusers=crackedusers.txt
+result_file=resultfile.txt
 
 while getopts 'f:p:' flag; do
 	case "${flag}" in
@@ -41,14 +39,15 @@ if [[ $pot_file == "" ]]; then
 	pot_file=/usr/share/hashcat/masterpot.pot
 fi
 
-cat $crackmap_file | cut -d ":" -f 5 > tmp.txt
+#cat $crackmap_file | cut -d ":" -f 5 > tmp.txt
 #we don't care about this hash
-cat tmp.txt | grep -v '31d6cfe0d16ae931b73c59d7e0c089c0' > $parsed_hash
+cat $crackmap_file | grep -v '31d6cfe0d16ae931b73c59d7e0c089c0' > $parsed_hash
 
 
 #use our hashes from crackmapexec and pull from potfile where hashes match
 while IFS='' read -r line || [[ -n "$line" ]]; do
-	cat $pot_file | grep $line >> tmp1.txt 2>/dev/null
+	nthash=$(echo $line | cut -d ':' -f 4)
+	cat $pot_file | grep $nthash >> tmp1.txt 2>/dev/null
 done < $parsed_hash
 
 #unique results only
@@ -60,24 +59,22 @@ cat $result_file | cut -d ":" -f 1 > $cracked_hashes
 
 
 while IFS='' read -r line1 || [[ -n "$line1" ]]; do
-	cat $crackmap_file | grep $line1 | cut -d ":" -f 2,4,5 | cut -d " " -f 9 >> $crackedusers
+	user_hash=$(cat $crackmap_file | grep $line1 | cut -d ':' -f 1,2,3,4)
 
 	
 	#get cleartext from cracked results file and store in tmp var
 	tmp_pw=$(cat $result_file | grep $line1 | cut -d ":" -f 2)
-	tmp_hash=$(cat $result_file | grep $line1 | cut -d ":" -f 1)
+	#tmp_hash=$(cat $result_file | grep $line1 | cut -d ":" -f 1)
 	#compare hashes to cracked users file 
-	tmp_user=$(cat $crackedusers | grep $line1 | cut -d ":" -f 1)
-	echo $tmp_user:$tmp_hash:$tmp_pw >> cracked.txt
+	#tmp_user=$(cat $crackedusers | grep $line1 | cut -d ":" -f 1)
+	#echo $tmp_user:$tmp_hash:$tmp_pw >> cracked.txt
+	echo $user_hash:$tmp_pw >> cracked.txt
 
 done < $cracked_hashes
 	
 #time2delete
 rm -rf $parsed_hash
 rm -rf $result_file
-rm -rf $cracked_hashes
-rm -rf $usernames
-rm -rf $crackedusers
-rm -rf tmp.txt
 rm -rf tmp1.txt
+rm -rf $cracked_hashes
 

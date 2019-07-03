@@ -15,4 +15,8 @@ only tested with hashcat
 
 ## CrackMapExec output that works with this script
 
+#UPDATE
+
+If your crackmap output is like the one shown below, run #### awk '{ print $4 }' $crackmapfile
+
 ![Alt text](img/samplepic.PNG)
