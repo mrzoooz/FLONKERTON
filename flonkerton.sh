@@ -30,7 +30,7 @@ while getopts 'f:p:' flag; do
 done
 
 if [[ $crackmap_file == "" ]]; then
-	printf "${yellow}Error: ${default}-f flag is required\n\n"
+	printf "${red}Error: ${default}-f flag is required\n\n"
 	print_usage
 	exit 2
 fi
@@ -59,16 +59,20 @@ cat $result_file | cut -d ":" -f 1 > $cracked_hashes
 
 
 while IFS='' read -r line1 || [[ -n "$line1" ]]; do
-	user_hash=$(cat $crackmap_file | grep $line1 | cut -d ':' -f 1,2,3,4)
+	cat $crackmap_file | grep $line1 | cut -d ':' -f 1,2,3,4 > tmp2.txt
 
-	
 	#get cleartext from cracked results file and store in tmp var
 	tmp_pw=$(cat $result_file | grep $line1 | cut -d ":" -f 2)
-	#tmp_hash=$(cat $result_file | grep $line1 | cut -d ":" -f 1)
-	#compare hashes to cracked users file 
-	#tmp_user=$(cat $crackedusers | grep $line1 | cut -d ":" -f 1)
-	#echo $tmp_user:$tmp_hash:$tmp_pw >> cracked.txt
-	echo $user_hash:$tmp_pw >> cracked.txt
+
+	if [[ $(cat tmp2.txt | wc -l) -gt 1 ]]; then
+		while IFS='' read -r line2 || [[ -n "$line2" ]]; do
+			echo $line2:$tmp_pw >> cracked.txt
+		done < tmp2.txt
+	else
+		echo $(cat tmp2.txt):$tmp_pw >> cracked.txt
+	fi
+
+	
 
 done < $cracked_hashes
 	
@@ -76,5 +80,6 @@ done < $cracked_hashes
 rm -rf $parsed_hash
 rm -rf $result_file
 rm -rf tmp1.txt
+rm -rf tmp2.txt
 rm -rf $cracked_hashes
 
