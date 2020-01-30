@@ -41,13 +41,12 @@ fi
 
 #cat $crackmap_file | cut -d ":" -f 5 > tmp.txt
 #we don't care about this hash
-cat $crackmap_file | grep -v '31d6cfe0d16ae931b73c59d7e0c089c0' > $parsed_hash
-
+cat $crackmap_file | grep -v '31d6cfe0d16ae931b73c59d7e0c089c0\|NO PASSWORD' > $parsed_hash
 
 #use our hashes from crackmapexec and pull from potfile where hashes match
 while IFS='' read -r line || [[ -n "$line" ]]; do
 	nthash=$(echo $line | cut -d ':' -f 4)
-	cat $pot_file | grep $nthash >> tmp1.txt 2>/dev/null
+	cat $pot_file | grep -i "$nthash" >> tmp1.txt 2>/dev/null
 done < $parsed_hash
 
 #unique results only
@@ -59,10 +58,9 @@ cat $result_file | cut -d ":" -f 1 > $cracked_hashes
 
 
 while IFS='' read -r line1 || [[ -n "$line1" ]]; do
-	cat $crackmap_file | grep $line1 | cut -d ':' -f 1,2,3,4 > tmp2.txt
-
+	cat $crackmap_file | grep -i "$line1" | cut -d ':' -f 1,2,3,4 > tmp2.txt
 	#get cleartext from cracked results file and store in tmp var
-	tmp_pw=$(cat $result_file | grep $line1 | cut -d ":" -f 2)
+	tmp_pw=$(cat $result_file | grep -i "$line1" | cut -d ":" -f 2)
 
 	if [[ $(cat tmp2.txt | wc -l) -gt 1 ]]; then
 		while IFS='' read -r line2 || [[ -n "$line2" ]]; do
@@ -82,4 +80,3 @@ rm -rf $result_file
 rm -rf tmp1.txt
 rm -rf tmp2.txt
 rm -rf $cracked_hashes
-
